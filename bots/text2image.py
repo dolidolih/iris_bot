@@ -5,11 +5,11 @@ from io import BytesIO, BufferedReader
 from bots.gemini import get_gemini_vision_analyze_image
 from helper.ImageHelper import ImageHelper as ih
 from helper.BotManager import BotManager
+from helper.Admin import is_reply
 from irispy2 import ChatContext
 
 
-RES_PATH = "/home/dolidoli/ipy2/res/"
-IMG_PATH = "/home/dolidoli/res/temppic/"
+RES_PATH = "res/"
 
 def draw_text(chat):
     match chat.message.command:
