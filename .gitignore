@@ -1,0 +1,6 @@
+venv
+temp.py
+res
+__pycache__
+helper/__pycache__
+bots/__pycache__
