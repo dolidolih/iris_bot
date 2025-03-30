@@ -8,6 +8,7 @@ from bots.lyrics import get_lyrics, find_lyrics
 from helper.Admin import is_not_banned, on_message_chat_addon
 from helper.BanControl import ban_user, unban_user
 from helper.BotManager import BotManager
+from bots.text2image import draw_text
 import sys
 
 iris_url = sys.argv[1]
@@ -61,6 +62,9 @@ def on_message(chat: ChatContext):
 
             case "!노래가사":
                 get_lyrics(chat)
+
+            case "!텍스트" | "!사진" | "!껄무새" | "!멈춰" | "!지워" | "!진행" | "!말대꾸" | "!텍스트추가":
+                draw_text(chat)
             
     except Exception as e :
         print(e)
