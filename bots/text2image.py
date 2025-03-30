@@ -117,6 +117,7 @@ def draw_sungmo(chat):
     
     send_image(chat, img)
 
+@is_reply()
 def add_text(chat):
     attachment = json.loads(chat.message.attachment)
     bot = BotManager().get_current_bot()
