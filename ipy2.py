@@ -10,7 +10,8 @@ from helper.BanControl import ban_user, unban_user
 from helper.BotManager import BotManager
 import sys
 
-bot = BotManager().get_current_bot()
+iris_url = sys.argv[1]
+bot = BotManager(iris_url).get_current_bot()
 
 @bot.on_event("message")
 @is_not_banned()
