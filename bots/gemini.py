@@ -159,3 +159,18 @@ def get_gemini_image_to_image(chat : ChatContext):
             f"오류가 발생하였거나, Gemini가 이미지 생성을 거부하였습니다.\n"
             f"Q: {chat.message.msg[4:]}"
         )
+
+def get_gemini_vision_analyze_image(url):
+    client = genai.Client(api_key=pro_key)
+    res = client.models.generate_content(
+        model="gemini-2.0-flash-lite",
+        config=types.GenerateContentConfig(
+            system_instruction="analyze the given image, and rate violence, sexuality score out of 100 in below format. If sexuality score is over 50, 성인물 will be True. Do not add any other comments or markdown\n폭력성 : score/100\n선정성 : score/100\n성인물 : True/False",
+            ),
+        contents=[url]
+        )
+    try:
+        result = res.text.strip()
+    except:
+        result = "Gemini 서버에서 오류가 발생했거나 분당 한도가 초과하였습니다. 잠시 후 다시 시도해주세요."
+    return result
