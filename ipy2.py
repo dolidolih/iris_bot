@@ -4,6 +4,7 @@ from bots.gemini import get_gemini_image, get_gemini_image_to_image
 from bots.pyeval import python_eval, real_eval
 from bots.stock import create_stock_image
 from bots.imagen import get_imagen
+from bots.lyrics import get_lyrics, find_lyrics
 from helper.Admin import is_not_banned, on_message_chat_addon
 from helper.BanControl import ban_user, unban_user
 from helper.BotManager import BotManager
@@ -53,6 +54,12 @@ def on_message(chat: ChatContext):
 
             case "!ig":
                 get_imagen(chat)
+            
+            case "!가사찾기":
+                find_lyrics(chat)
+
+            case "!노래가사":
+                get_lyrics(chat)
             
     except Exception as e :
         print(e)
