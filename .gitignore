@@ -1,6 +1,9 @@
 venv
 temp.py
-res
+res/env
+res/temp.py
+res/ipy.db
+res/test.db
 __pycache__
 helper/__pycache__
 bots/__pycache__
