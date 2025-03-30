@@ -2,9 +2,6 @@ import requests
 from PIL import Image, ImageDraw, ImageFont
 import io
 import json
-import pandas as pd
-import mplfinance as mpf
-import matplotlib.dates as mdates
 from helper.Admin import has_param
 
 @has_param()
