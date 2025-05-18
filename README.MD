@@ -3,6 +3,18 @@
 
 # Iris + IrisPy2 기반 샘플 봇
 
+### `2025.05.18 변경사항` :
+- 이제 irispy2가 아닌 irispy-client 모듈을 사용합니다. import는 iris로 합니다.
+- 기본 venv 디렉토리가 .venv가 아닌 venv로 변경되었습니다.
+- iris 커맨드라인 툴을 사용하도록 가이드를 변경하였습니다.
+- 더이상 BotManager를 사용하지 않습니다.
+- kv는 PyKV() 를 init하면 자동으로 쓰레드 safe한 kv 인스턴스가 반환됩니다.
+- 실행파일명이 irispy.py로 변경되었습니다.
+- kv의 디폴트 path가 project_root의 iris.db로 변경되었습니다.
+- addon이 iris.decorators로 변경되었습니다.
+- DatabaseHelper를 삭제하였습니다.
+- chat.reply_media() 내 "IMAGE"를 삭제하고 인자를 하나만 받습니다. 인자는 filepath, url, PIL.Image, bytes, BufferedReader 를 모두 지원합니다.
+
 ### `2025.04.12 변경사항` : 데코레이터의 불필요한 ()가 제거되었습니다. 기존 사용중인 코드 중 데코레이터를 사용한 코드가 있다면 변경이 필요합니다.
 
 ## 초기 설정
@@ -13,27 +25,31 @@
     cd ~
     git clone https://github.com/dolidolih/iris_bot
     cd iris_bot
-    python -m venv .venv
+    python -m venv venv
     
     # 가상 환경 활성화 (Windows의 경우 venv/Scripts/Activate.ps1)
-    source .venv/bin/activate
+    source venv/bin/activate
     
     pip install -U pip
     pip install -r requirements.txt
+
+    iris init
     ```
 
 2.  **Admin User ID 설정:**
     ```bash
-    python
+    iris admin add <user_id>
     ```
 
-    그런 다음, 아래 Python 코드를 실행하세요. `YOUR_ADMIN_USER_ID` 부분을 관리자의 User ID로 바꿔야하며, iris dashboard에서 확인할 수 있습니다:
-    ```python
-    from helper.BotManager import BotManager
-    kv = BotManager("a").get_kv()
-    kv.put("admin", [YOUR_ADMIN_USER_ID])
-    kv.put("ban", [])
-    exit()
+3.  **KakaoLink 설정(Optional):**
+    ```bash
+    iris kakaolink <app_key> <origin>
+    ```
+
+4.  **서비스 설정(Optional):**
+    ```bash
+    iris service create
+    iris service start/stop/status
     ```
 
 ## 환경 변수 설정
@@ -86,8 +102,6 @@ systemd와 같은 서비스 관리자 없이 봇을 직접 실행하는 경우:
     export GEMINI_KEY="YOUR_ACTUAL_GEMINI_KEY"
     export X_NAVER_CLIENT_ID="YOUR_NAVER_CLIENT_ID"
     export X_NAVER_CLIENT_SECRET="YOUR_NAVER_CLIENT_SECRET"
-    export KAKAOLINK_APP_KEY="YOUR_KAKAOLINK_JAVASCRIPT_APP_KEY"
-    export KAKAOLINK_ORIGIN="YOUR KAKAOLINK ORIGIN"
     ```
 3.  파일을 저장하고 (`nano`에서 Ctrl+x y Enter) 편집기를 종료합니다 (Ctrl+X).
 4.  `source ~/.bashrc` 명령어를 실행하거나 새 터미널 세션을 시작하여 변경 사항을 적용합니다.
@@ -97,7 +111,7 @@ systemd와 같은 서비스 관리자 없이 봇을 직접 실행하는 경우:
 `systemd` 서비스를 사용하여 봇 프로세스를 관리하는 경우:
 
 *   **`EnvironmentFile` 사용**
-    *   환경 변수 파일(예: `/home/YOUR_USER/iris_bot/.env`)을 생성합니다. **이 파일은 비밀 정보를 포함하므로 안전한 권한(`chmod 600`)을 설정해야 합니다.**
+    *   환경 변수 파일(예: `/home/YOUR_USER/iris_bot/.env`)에 아래의 내용을 포함시킵니다. **이 파일은 비밀 정보를 포함하므로 안전한 권한(`chmod 600`)을 설정해야 합니다.**
         ```ini
         # /home/YOUR_USER/iris_bot/.env 파일 내용 예시
         PYTHONUNBUFFERED=1
@@ -106,33 +120,6 @@ systemd와 같은 서비스 관리자 없이 봇을 직접 실행하는 경우:
         GEMINI_KEY="YOUR_ACTUAL_GEMINI_KEY"
         X_NAVER_CLIENT_ID="YOUR_NAVER_CLIENT_ID"
         X_NAVER_CLIENT_SECRET="YOUR_NAVER_CLIENT_SECRET"
-        KAKAOLINK_APP_KEY="YOUR_KAKAOLINK_JAVASCRIPT_APP_KEY"
-        KAKAOLINK_ORIGIN="YOUR KAKAOLINK ORIGIN"
-        ```
-    *   systemd 서비스 파일을 편집합니다:
-        ```bash
-        sudo nano /etc/systemd/system/YOUR_BOT_SERVICE.service
-        ```
-    *   `[Service]` 섹션 내에 `EnvironmentFile` 지시어를 추가하고, `.env` 파일의 절대 경로를 지정합니다:
-        ```ini
-        [Unit]
-        Description=Iris Bot Service
-        After=network.target
-
-        [Service]
-        User=YOUR_USER # 봇을 실행하는 사용자로 변경
-        WorkingDirectory=/home/YOUR_USER/iris_bot # 봇 디렉토리 경로
-        ExecStart=/home/YOUR_USER/iris_bot/venv/bin/python ipy2.py # Python 실행 경로 및 메인 스크립트 확인
-        Restart=always
-        EnvironmentFile=/home/YOUR_USER/iris_bot/.env # <--- 이 줄 추가
-
-        [Install]
-        WantedBy=multi-user.target
-        ```
-    *   systemd 데몬을 리로드하고 서비스를 재시작합니다:
-        ```bash
-        sudo systemctl daemon-reload
-        sudo systemctl restart YOUR_BOT_SERVICE.service
         ```
 
 ### 3. Docker 사용
@@ -154,8 +141,6 @@ systemd와 같은 서비스 관리자 없이 봇을 직접 실행하는 경우:
       -e GEMINI_KEY="YOUR_ACTUAL_GEMINI_KEY" \
       -e X_NAVER_CLIENT_ID="YOUR_NAVER_CLIENT_ID" \
       -e X_NAVER_CLIENT_SECRET="YOUR_NAVER_CLIENT_SECRET" \
-      -e KAKAOLINK_APP_KEY="YOUR_KAKAOLINK_JAVASCRIPT_APP_KEY" \
-      -e KAKAOLINK_ORIGIN="YOUR KAKAOLINK ORIGIN" \
       YOUR_BOT_IMAGE_NAME
     ```
 *   **옵션 C: `docker-compose.yml` 사용**
@@ -178,8 +163,6 @@ systemd와 같은 서비스 관리자 없이 봇을 직접 실행하는 경우:
         #   GEMINI_KEY: "YOUR_ACTUAL_GEMINI_KEY"
         #   X_NAVER_CLIENT_ID: "YOUR_NAVER_CLIENT_ID"
         #   X_NAVER_CLIENT_SECRET: "YOUR_NAVER_CLIENT_SECRET"
-        #   KAKAOLINK_APP_KEY="YOUR_KAKAOLINK_JAVASCRIPT_APP_KEY"
-        #   KAKAOLINK_ORIGIN="YOUR KAKAOLINK ORIGIN"
         # 필요한 경우 볼륨이나 포트 추가
         # volumes:
         #   - .:/app

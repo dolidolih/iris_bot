@@ -13,3 +13,5 @@ uv.lock
 .python-version
 .idea
 .venv
+.env
+iris.db

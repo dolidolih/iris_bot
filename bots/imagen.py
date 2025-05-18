@@ -1,8 +1,8 @@
-from irispy2 import ChatContext
+from iris import ChatContext
 import asyncio
 from gemini_webapi import GeminiClient
 import time
-from addon import *
+from iris.decorators import *
 import os
 
 Secure_1PSID = os.getenv("SECURE_1PSID")

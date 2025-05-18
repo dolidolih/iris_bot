@@ -1,6 +1,6 @@
-from addon import *
 from helper import ih
-from irispy2 import ChatContext
+from iris import ChatContext
+from iris.decorators import *
 
 def reply_photo(chat: ChatContext, kl):
     match chat.message.command:
@@ -14,10 +14,10 @@ def reply_photo(chat: ChatContext, kl):
             send_avatar_kakaolink(chat, kl)
 
 def send_tiger(chat: ChatContext):
-    chat.reply_media("IMAGE", [open("res/aaa.jpeg", "rb")])
+    chat.reply_media("res/aaa.jpeg")
 
 def send_triple_tiger(chat: ChatContext):
-    chat.reply_media("IMAGE", [open("res/aaa.jpeg", "rb"), open("res/aaa.jpeg", "rb"), open("res/aaa.jpeg", "rb")])
+    chat.reply_media([open("res/aaa.jpeg", "rb"), open("res/aaa.jpeg", "rb"), open("res/aaa.jpeg", "rb")])
 
 @is_reply
 def send_avatar(chat: ChatContext):

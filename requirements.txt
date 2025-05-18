@@ -1,7 +1,4 @@
-pillow
+irispy-client
 gemini_webapi
-requests
 google-genai
-irispy2==3.4.0
 pytz
-httpx

@@ -1,8 +1,8 @@
 # coding: utf8
 import sys
 import subprocess
-from irispy2 import ChatContext
-from addon import *
+from iris import ChatContext
+from iris.decorators import *
 
 @is_admin
 @has_param

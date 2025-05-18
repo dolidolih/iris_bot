@@ -50,16 +50,8 @@ class ImageHelper:
 
     @classmethod
     def send_image(cls, chat, imgs: list):
-        if type(imgs) == str:
-            imgs = [imgs]
-        result = []
-        for img in imgs:
-            buffered_reader = cls.image_to_buffered_reader(img)
-            result.append(buffered_reader)
-            
         chat.reply_media(
-            "IMAGE",
-            result
+            imgs
         )
 
     @classmethod
