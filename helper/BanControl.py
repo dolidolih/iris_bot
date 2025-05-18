@@ -1,6 +1,5 @@
-from addon import *
-from irispy2 import ChatContext
-from helper import BotManager
+from iris.decorators import *
+from iris import ChatContext, PyKV
 
 @is_admin
 @is_reply
@@ -8,7 +7,7 @@ def ban_user(chat: ChatContext):
     replied_chat = chat.get_source()
     reply_user_id = replied_chat.sender.id
     reply_user_name = replied_chat.sender.name
-    kv = BotManager().get_kv()
+    kv = PyKV()
     ban_list = kv.get('ban')
     if not ban_list:
         ban_list = []
@@ -26,7 +25,7 @@ def unban_user(chat: ChatContext):
     replied_chat = chat.get_source()
     reply_user_id = replied_chat.sender.id
     reply_user_name = replied_chat.sender.name
-    kv = BotManager().get_kv()
+    kv = PyKV()
     ban_list = kv.get('ban')
     if not ban_list:
         ban_list = []

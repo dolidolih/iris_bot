@@ -4,10 +4,8 @@ import requests, random, os
 from io import BytesIO, BufferedReader
 from bots.gemini import get_gemini_vision_analyze_image
 from helper import ih
-from helper import BotManager
-from addon import *
-from irispy2 import ChatContext
-
+from iris.decorators import *
+from iris import ChatContext, PyKV
 
 RES_PATH = "res/"
 disallowed_substrings = ["medium.com", "post.phinf.naver.net", ".gif", "imagedelivery.net", "clien.net"]
@@ -74,7 +72,7 @@ def draw_default(chat):
         print(e)
         if url:
             print("Exception occurred with url: {url}")
-            kv = BotManager().get_kv()
+            kv = PyKV()
             failed_urls = kv.get("naver_failed_urls")
             if not failed_urls:
                 failed_urls = []
@@ -169,14 +167,8 @@ def add_default_text(chat, img, txt):
     
 
 def send_image(chat, img):
-    image_bytes_io = BytesIO()
-    img = img.convert("RGBA")
-    img.save(image_bytes_io, format="PNG")
-    image_bytes_io.seek(0)
-    buffered_reader = BufferedReader(image_bytes_io)
     chat.reply_media(
-        "IMAGE",
-        [buffered_reader]
+        img
     )
 
 def get_image_from_url(url):

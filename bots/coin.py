@@ -1,8 +1,7 @@
 import requests
 import datetime
 import pytz
-from irispy2 import ChatContext
-from helper import BotManager
+from iris import ChatContext, PyKV
 
 all_url = "https://api.upbit.com/v1/market/all"
 base_url = "https://api.upbit.com/v1/ticker?markets="
@@ -30,7 +29,7 @@ def get_coin_info(chat: ChatContext):
             coin_remove(chat)
 
 def get_upbit(chat: ChatContext):
-    kv = BotManager().get_kv()
+    kv = PyKV()
     query = chat.message.param.upper()
     res = requests.get(base_url + 'KRW-' + query)
     if 'error' in res.text:
@@ -65,7 +64,7 @@ def get_upbit(chat: ChatContext):
     chat.reply(result)
 
 def get_my_coins(chat: ChatContext):
-    kv = BotManager().get_kv()
+    kv = PyKV()
     my_coins = kv.get(f"coin.{str(chat.sender.id)}")
     if not my_coins:
         chat.reply("등록된 코인이 없습니다. !코인등록 기능으로 코인을 등록하세요.")
@@ -207,7 +206,7 @@ def coin_add(chat: ChatContext):
         chat.reply('업비트 원화마켓만 지원합니다.\n"!코인등록 코인명(영문심볼) 보유수량 평균단가"로 입력하세요.')
         return None
 
-    kv = BotManager().get_kv()
+    kv = PyKV()
     user_kv = kv.get(f"coin.{str(chat.sender.id)}")
     if not user_kv:
         user_kv = {}
@@ -218,7 +217,7 @@ def coin_add(chat: ChatContext):
     chat.reply(f'{symbol}코인을 {average}원에 {amount}개 등록하였습니다.')
 
 def coin_remove(chat: ChatContext):
-    kv = BotManager().get_kv()
+    kv = PyKV()
     msg_split = chat.message.msg.split(" ")
     if not len(msg_split) == 2:
         chat.reply('"!코인삭제 코인명(영문심볼)"으로 입력하세요.')

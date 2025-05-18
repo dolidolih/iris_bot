@@ -1,13 +1,13 @@
 import time, datetime
-from helper import BotManager
+from iris import PyKV, Bot
 import pytz
 
 detect_rooms = ["18398338829933617"]
 refresh_second = 3
 
 def detect_nickname_change(base_url):
-    bot = BotManager(base_url).get_current_bot()
-    kv = BotManager().get_kv()
+    bot = Bot(base_url)
+    kv = PyKV()
     query = "select enc,nickname,user_id,involved_chat_id from db2.open_chat_member"
     history = kv.get('user_history')
     members = {}

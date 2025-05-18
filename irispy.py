@@ -1,5 +1,5 @@
-from irispy2 import ChatContext
-from irispy2.bot.models import ErrorContext
+from iris import ChatContext, Bot
+from iris.bot.models import ErrorContext
 from bots.gemini import get_gemini
 from bots.pyeval import python_eval, real_eval
 from bots.stock import create_stock_image
@@ -9,20 +9,18 @@ from bots.replyphoto import reply_photo
 from bots.text2image import draw_text
 from bots.coin import get_coin_info
 
-from addon import *
+from iris.decorators import *
 from helper.BanControl import ban_user, unban_user
-from helper import BotManager
-from kakaolink import IrisLink
+from iris.kakaolink import IrisLink
 
 from bots.detect_nickname_change import detect_nickname_change
 import sys, threading
 
 iris_url = sys.argv[1]
-bot = BotManager(iris_url).get_current_bot()
+bot = Bot(iris_url)
 
 @bot.on_event("message")
 @is_not_banned
-@on_message_chat_addon
 def on_message(chat: ChatContext):
     try:
         match chat.message.command:
@@ -35,7 +33,7 @@ def on_message(chat: ChatContext):
 
             #make your own help.png or remove !iris
             case "!iris":
-                chat.reply_media("IMAGE", [open("res/help.png", "rb")])
+                chat.reply_media("res/help.png")
 
             case "!gi" | "!i2i" | "!분석":
                 get_gemini(chat)
@@ -72,10 +70,6 @@ def on_message(chat: ChatContext):
             
     except Exception as e :
         print(e)
-    finally:
-        BotManager().close_kv_connection()
-        sys.stdout.flush()
-            
 
 #입장감지
 @bot.on_event("new_member")

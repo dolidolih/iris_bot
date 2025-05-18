@@ -1,6 +1,6 @@
 import requests
 import urllib.parse
-from irispy2 import ChatContext
+from iris import ChatContext
 
 def find_lyrics(chat: ChatContext):
     try:
