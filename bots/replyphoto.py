@@ -1,4 +1,3 @@
-from helper import ih
 from iris import ChatContext
 from iris.decorators import *
 
@@ -22,7 +21,7 @@ def send_triple_tiger(chat: ChatContext):
 @is_reply
 def send_avatar(chat: ChatContext):
     avatar = chat.get_source().sender.avatar.img
-    ih.send_image(chat, [avatar])
+    chat.reply_media(avatar)
     
 @is_reply
 def send_avatar_kakaolink(chat: ChatContext, kl):

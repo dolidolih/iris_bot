@@ -3,7 +3,6 @@ from PIL import Image, ImageFont, ImageDraw
 import requests, random, os
 from io import BytesIO, BufferedReader
 from bots.gemini import get_gemini_vision_analyze_image
-from helper import ih
 from iris.decorators import *
 from iris import ChatContext, PyKV
 
@@ -99,7 +98,7 @@ def draw_gogo(chat):
     w, h = multiline_textsize(txt,font=font)
     draw.multiline_text((20, img.size[1]/2-70), u'%s' % txt, font=font, fill=color)
 
-    send_image(chat, img)
+    chat.reply_media(img)
 
 def draw_rmrf(chat):
     color = '#000000'
@@ -111,7 +110,7 @@ def draw_rmrf(chat):
     w, h = multiline_textsize(txt,font=font)
     draw.multiline_text((img.size[0]/2-w-130, img.size[1]/2-30), u'%s' % txt, font=font, fill=color)
 
-    send_image(chat, img)
+    chat.reply_media(img)
 
 def draw_sungmo(chat):
     color = '#000000'
@@ -128,7 +127,7 @@ def draw_sungmo(chat):
     w, h = multiline_textsize(txt2,font=font)
     draw.multiline_text((img.size[0]/2-w/2+5, img.size[1]-170), u'%s' % txt2, font=font, fill=color)
     
-    send_image(chat, img)
+    chat.reply_media(img)
 
 @is_reply
 def add_text(chat):
@@ -163,14 +162,8 @@ def add_default_text(chat, img, txt):
     draw.multiline_text((img.size[0]/2-w/2+1, img.size[1]-h-(img.size[1]/20)+1), u'%s' % txt, font=font, align='center', fill="black", spacing=10)
     draw.multiline_text((img.size[0]/2-w/2, img.size[1]-h-(img.size[1]/20)), u'%s' % txt, font=font, align='center', fill=color, spacing=10)
     
-    send_image(chat, img)
+    chat.reply_media(img)
     
-
-def send_image(chat, img):
-    chat.reply_media(
-        img
-    )
-
 def get_image_from_url(url):
     try:
         response = requests.get(url)

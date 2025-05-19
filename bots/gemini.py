@@ -2,10 +2,11 @@ from google import genai
 from google.genai import types
 from PIL import Image
 from io import BytesIO
-from helper import ih
+import requests
 from iris.decorators import *
 from iris import ChatContext
 import os, io
+import time
 
 pro_key = os.getenv("GEMINI_KEY")
 
@@ -107,21 +108,17 @@ def get_gemini_image_to_image(chat : ChatContext):
     try:
         msg = chat.message.param
         src_chat = chat.get_source()
-        if hasattr(src_chat, "image"):
-            photo_url = src_chat.image.url[0]
+        if src_chat.message.image:
+            img = src_chat.message.image.img[0]
         else:
             return
-        img = ih.download_img_from_url(photo_url)[0]
-        filepath = ih.save_img(img)
-
+        
         client = genai.Client(
             api_key=pro_key,
         )
 
-        file_ref = client.files.upload(file=filepath)
-
         model = "gemini-2.0-flash-exp-image-generation"
-        contents = [msg, file_ref]
+        contents = [msg, img]
         generate_content_config = types.GenerateContentConfig(
             response_modalities=[
                 "image",
@@ -159,6 +156,9 @@ def get_gemini_image_to_image(chat : ChatContext):
                 f"Q: {chat.message.param}"
             )
     except Exception as e:
+        print(chat.image)
+        import traceback
+        traceback.print_exc()
         chat.reply(
             f"오류가 발생하였거나, Gemini가 이미지 생성을 거부하였습니다.\n"
             f"Q: {chat.message.param}"
@@ -168,13 +168,12 @@ def get_gemini_image_to_image(chat : ChatContext):
 def get_gemini_vision_analyze_image_reply(chat: ChatContext):
     src_chat = chat.get_source()
     if hasattr(src_chat, "image"):
-        photo_url = src_chat.image.url[0]
-        check_result = get_gemini_vision_analyze_image(photo_url)
+        img = src_chat.image.img[0]
+        check_result = get_gemini_vision_analyze_image(img)
         chat.reply(check_result)
 
-def get_gemini_vision_analyze_image(url):
+def get_gemini_vision_analyze_image(img):
     client = genai.Client(api_key=pro_key)
-    image = Image.open(io.BytesIO(ih.download_img_from_url(url)[0]))
     res = client.models.generate_content(
         model="gemini-2.0-flash-exp-image-generation",
         config=types.GenerateContentConfig(
@@ -184,7 +183,7 @@ def get_gemini_vision_analyze_image(url):
                     dynamic_retrieval_config=types.DynamicRetrievalConfig(
                         dynamic_threshold=0.6))
             )],),
-        contents=[image]
+        contents=[img]
         )
     try:
         result = res.text.strip()
