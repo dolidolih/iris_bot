@@ -108,7 +108,7 @@ def get_gemini_image_to_image(chat : ChatContext):
     try:
         msg = chat.message.param
         src_chat = chat.get_source()
-        if src_chat.message.image:
+        if src_chat.message.image != None:
             img = src_chat.message.image.img[0]
         else:
             return
@@ -139,7 +139,7 @@ def get_gemini_image_to_image(chat : ChatContext):
 
             if chunk.candidates[0].content.parts[0].inline_data:
                 chat.reply_media(
-                [BytesIO(chunk.candidates[0].content.parts[0].inline_data.data)]
+                    chunk.candidates[0].content.parts[0].inline_data.data
                 )
                 return ""
 
@@ -156,7 +156,7 @@ def get_gemini_image_to_image(chat : ChatContext):
                 f"Q: {chat.message.param}"
             )
     except Exception as e:
-        print(chat.image)
+        print(chat.message.image[0])
         import traceback
         traceback.print_exc()
         chat.reply(
@@ -167,8 +167,8 @@ def get_gemini_image_to_image(chat : ChatContext):
 @is_reply
 def get_gemini_vision_analyze_image_reply(chat: ChatContext):
     src_chat = chat.get_source()
-    if hasattr(src_chat, "image"):
-        img = src_chat.image.img[0]
+    if src_chat.message.image != None:
+        img = src_chat.message.image.img[0]
         check_result = get_gemini_vision_analyze_image(img)
         chat.reply(check_result)
 
