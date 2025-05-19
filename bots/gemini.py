@@ -80,7 +80,7 @@ def get_gemini_image(chat : ChatContext):
                 continue
             if chunk.candidates[0].content.parts[0].inline_data:
                 chat.reply_media(
-                [BytesIO(chunk.candidates[0].content.parts[0].inline_data.data)]
+                    chunk.candidates[0].content.parts[0].inline_data.data
                 )
                 return ""
 
