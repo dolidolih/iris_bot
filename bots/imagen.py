@@ -15,7 +15,6 @@ def get_imagen(chat: ChatContext):
     for file in image_files:
         images.append(open("res/temppic/"+file,"rb"))
     chat.reply_media(
-        "IMAGE",
         images
     )
 
