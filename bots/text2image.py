@@ -30,7 +30,7 @@ def draw_text(chat: ChatContext):
         case "!텍스트추가":
             add_text(chat)
 
-def draw_default(chat):
+def draw_default(chat: ChatContext):
     try:
         msg = chat.message.param
         msg_split = msg.split("##")
@@ -78,17 +78,17 @@ def draw_default(chat):
             failed_urls.append(url)
             kv.put("naver_failed_urls",failed_urls)
 
-def draw_parrot(chat):
+def draw_parrot(chat: ChatContext):
     txt = chat.message.param
     img = Image.open(RES_PATH + 'parrot.jpg')
     add_default_text(chat, img, txt)
 
-def draw_stop(chat):
+def draw_stop(chat: ChatContext):
     txt = chat.message.param
     img = Image.open(RES_PATH + 'stop.jpg')
     add_default_text(chat, img, txt)
 
-def draw_gogo(chat):
+def draw_gogo(chat: ChatContext):
     color = '#FFFFFF'
     txt = chat.message.param
     img = Image.open(RES_PATH + 'gogo.png')
@@ -100,7 +100,7 @@ def draw_gogo(chat):
 
     chat.reply_media(img)
 
-def draw_rmrf(chat):
+def draw_rmrf(chat: ChatContext):
     color = '#000000'
     txt = chat.message.param
     img = Image.open(RES_PATH + 'rmrf.jpg')
@@ -112,7 +112,7 @@ def draw_rmrf(chat):
 
     chat.reply_media(img)
 
-def draw_sungmo(chat):
+def draw_sungmo(chat: ChatContext):
     color = '#000000'
     txt_split = chat.message.param.split("##")
     txt1 = txt_split[0]
@@ -130,16 +130,15 @@ def draw_sungmo(chat):
     chat.reply_media(img)
 
 @is_reply
-def add_text(chat):
+def add_text(chat: ChatContext):
     src_chat = chat.get_source()
-    if hasattr(src_chat, "image"):
-        photo_url = src_chat.image.url[0]
+    if hasattr(src_chat.message, "image"):
+        img = src_chat.message.image.img[0]
+        txt = " ".join(chat.message.msg.split(" ")[1:])
+        add_default_text(chat, img, txt)
     else:
         return
-    img = get_image_from_url(photo_url)
-    txt = " ".join(chat.message.msg.split(" ")[1:])
-
-    add_default_text(chat, img, txt)
+    
 
 def add_default_text(chat, img, txt):
     if "::" in txt:
