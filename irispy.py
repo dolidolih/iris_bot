@@ -15,9 +15,35 @@ from iris.kakaolink import IrisLink
 
 from bots.detect_nickname_change import detect_nickname_change
 import sys, threading
+import signal
+import time
+import os
 
-iris_url = sys.argv[1]
+iris_url = os.getenv("IRIS_URL")
+if not iris_url:
+    if len(sys.argv) > 1:
+        iris_url = sys.argv[1]
+    else:
+        # Default fallback or error
+        print("Warning: IRIS_URL not set. Usage: python irispy.py <url> or set IRIS_URL env var.")
+        # We allow it to fail later or handle it gracefully if needed, 
+        # but for now let's exit if we strictly need it, or assume user knows what they are doing.
+        if len(sys.argv) <= 1: 
+             print("Error: No IRIS_URL provided.")
+             sys.exit(1)
+
 bot = Bot(iris_url)
+
+# Graceful shutdown handler
+def signal_handler(sig, frame):
+    print("\nAttempting graceful shutdown...")
+    # Add any specific cleanup code here if `bot` has a close method exposed
+    # For now, we exit, which usually closes sockets. 
+    # If the library supports explicit close provided by user, call it here.
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 @bot.on_event("message")
 @is_not_banned
@@ -94,5 +120,18 @@ if __name__ == "__main__":
     nickname_detect_thread = threading.Thread(target=detect_nickname_change, args=(bot.iris_url,))
     nickname_detect_thread.start()
     #카카오링크를 사용하지 않는 경우 주석처리
+    #카카오링크를 사용하지 않는 경우 주석처리
     kl = IrisLink(bot.iris_url)
-    bot.run()
+    
+    # Reconnection Loop
+    while True:
+        try:
+            print(f"Connecting to IRIS at {bot.iris_url}...")
+            bot.run()
+        except Exception as e:
+            print(f"Bot/Connection crashed: {e}")
+            print("Reconnecting in 5 seconds...")
+            time.sleep(5)
+        except SystemExit:
+            print("Bot stopped gracefully.")
+            break
