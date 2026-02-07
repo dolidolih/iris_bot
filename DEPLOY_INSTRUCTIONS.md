@@ -13,7 +13,7 @@ GitHub 저장소의 `Settings` > `Secrets and variables` > `Actions` 메뉴에�
 | **`HOST`** | `123.45.67.89` | 배포할 서버의 IP 주소 |
 | **`USERNAME`** | `ubuntu` | 서버 접속 SSH 계정명 (root 등) |
 | **`KEY`** | `-----BEGIN RSA...` | SSH Private Key 내용 전체 (pem 파일 내용) |
-| **`IRIS_URL`** | `ws://host.docker.internal:3000` | 봇이 접속할 웹소켓 주소 |
+| **`IRIS_URL`** | `ws://127.0.0.1:3000` | 봇이 접속할 웹소켓 주소 (서버 로컬 주소 사용 가능) |
 | **`PORT`** | `22` | (선택) SSH 포트. 기본값 22라면 생략 가능 |
 
 ## 2. 자동 배포 작동 원리
