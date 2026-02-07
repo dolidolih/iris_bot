@@ -12,6 +12,7 @@ from bots.coin import get_coin_info
 from iris.decorators import *
 from helper.BanControl import ban_user, unban_user
 from iris.kakaolink import IrisLink
+from bots.redis_alarm import RedisAlarmListener
 
 from bots.detect_nickname_change import detect_nickname_change
 import sys, threading
@@ -93,7 +94,10 @@ def on_message(chat: ChatContext):
             
             case "!코인" | "!내코인" | "!바낸" | "!김프" | "!달러" | "!코인등록" | "!코인삭제":
                 get_coin_info(chat)
-            
+
+            case "!id":
+                chat.reply(f"Chat ID: {chat.id}\nSender ID: {chat.sender.id}")
+
     except Exception as e :
         print(e)
 
@@ -123,6 +127,20 @@ if __name__ == "__main__":
     #카카오링크를 사용하지 않는 경우 주석처리
     kl = IrisLink(bot.iris_url)
     
+    # Redis Alarm Listener Start
+    alarm_chat_id = os.getenv("ALARM_CHAT_ID")
+    if alarm_chat_id:
+        def alarm_callback(message):
+            try:
+                bot.api.reply(chat_id=int(alarm_chat_id), text=message)
+            except Exception as e:
+                print(f"Failed to send alarm: {e}")
+
+        redis_listener = RedisAlarmListener(callback=alarm_callback)
+        redis_listener.start()
+    else:
+        print("Warning: ALARM_CHAT_ID not set. Redis Alarm Listener will log to console only.")
+
     # Reconnection Loop
     while True:
         try:
@@ -134,4 +152,6 @@ if __name__ == "__main__":
             time.sleep(5)
         except SystemExit:
             print("Bot stopped gracefully.")
+            if 'redis_listener' in locals() and redis_listener:
+                redis_listener.stop()
             break
