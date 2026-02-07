@@ -98,6 +98,20 @@ def on_message(chat: ChatContext):
             case "!id":
                 chat.reply(f"Chat ID: {chat.id}\nSender ID: {chat.sender.id}")
 
+            case "!구조":
+                import pprint
+                # chat 객체의 속성들을 딕셔너리 형태로 변환하여 출력 (가능한 경우)
+                try:
+                    debug_info = f"Attributes of chat:\n{pprint.pformat(chat.__dict__)}\n\nAttributes of sender:\n{pprint.pformat(chat.sender.__dict__)}"
+                except:
+                    debug_info = f"Dir(chat): {dir(chat)}\n\nDir(sender): {dir(chat.sender)}"
+                
+                # 메시지가 너무 길 수 있으므로 잘라서 보내거나 로그로 출력
+                print(debug_info) 
+                chat.reply("구조 정보가 콘솔에 출력되었습니다. (너무 길어서 채팅으로는 일부만 보일 수 있습니다)")
+                if len(debug_info) < 1000:
+                    chat.reply(debug_info)
+
     except Exception as e :
         print(e)
 
