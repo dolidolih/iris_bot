@@ -85,6 +85,7 @@ jobs:
           docker run -d \
             --name yoonmini-bot \
             --restart unless-stopped \
+            --network host \
             -e IRIS_URL="${{ secrets.IRIS_URL }}" \
             ${{ secrets.DOCKER_USERNAME }}/yoonmini-bot:latest
 
