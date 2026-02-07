@@ -73,20 +73,38 @@ jobs:
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT || 22 }}
         script: |
-          # Pull the latest image
           docker pull ${{ secrets.DOCKER_USERNAME }}/yoonmini-bot:latest
           
-          # Stop and remove the old container if it exists
-          docker stop yoonmini-bot || true
-          docker rm yoonmini-bot || true
+          # Function to deploy a bot instance
+          deploy_bot() {
+            local ID=$1
+            local URL=$2
+            
+            if [ -n "$URL" ]; then
+              echo "Deploying yoonmini-bot-$ID..."
+              docker stop yoonmini-bot-$ID || true
+              docker rm yoonmini-bot-$ID || true
+              docker run -d \
+                --name yoonmini-bot-$ID \
+                --restart unless-stopped \
+                --network host \
+                -e IRIS_URL="$URL" \
+                ${{ secrets.DOCKER_USERNAME }}/yoonmini-bot:latest
+            else
+              echo "Skipping yoonmini-bot-$ID (Secret not set)"
+            fi
+          }
+
+          # Deploy up to 3 bots if secrets exist
+          # IRIS_URL (Legacy/Default) -> mapped to bot-1 if IRIS_URL_1 is empty, or handle as main
+          # Let's standardize: Try IRIS_URL_1, IRIS_URL_2, IRIS_URL_3.
+          # Fallback: If IRIS_URL_1 is empty but IRIS_URL is set, use IRIS_URL for bot-1.
           
-          # Run the new container
-          # Passing IRIS_URL from secrets
-          docker run -d \
-            --name yoonmini-bot \
-            --restart unless-stopped \
-            --network host \
-            -e IRIS_URL="${{ secrets.IRIS_URL }}" \
-            ${{ secrets.DOCKER_USERNAME }}/yoonmini-bot:latest
+          URL_1="${{ secrets.IRIS_URL_1 }}"
+          if [ -z "$URL_1" ]; then URL_1="${{ secrets.IRIS_URL }}"; fi
+          
+          deploy_bot 1 "$URL_1"
+          deploy_bot 2 "${{ secrets.IRIS_URL_2 }}"
+          deploy_bot 3 "${{ secrets.IRIS_URL_3 }}"
 
 
