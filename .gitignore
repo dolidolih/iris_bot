@@ -1,17 +1,46 @@
-venv
-temp.py
-res/env
-res/temp.py
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# Databases & Cache
+*.db
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
 res/ipy.db
 res/test.db
-res/help.png
-__pycache__
-helper/__pycache__
-bots/__pycache__
+cache/
+.cache/
+
+# Logs
+*.log
+*.log.*
+bot.log
+bot.log.bak
+bot.log.save
+
+# Environment & config
+.env
+.env.*
+res/env
+.idea/
+.vscode/
+.python-version
 pyproject.toml
 uv.lock
-.python-version
-.idea
-.venv
-.env
-iris.db
+
+# OS & Vim swap files
+.DS_Store
+*.swp
+*~
+*.swo
+
+# Project specific ignores
+temp.py
+res/temp.py
+res/help.png
